@@ -1,15 +1,43 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         QueueThreadSafe<Integer> queue = new QueueThreadSafe<>(5);
+        IntegerSafe totalValue = new IntegerSafe();
 
-        Producer producer = new Producer(queue, 10000);
-        Consumer consumer = new Consumer(queue);
+        Thread[] producerList = {
+                new Thread(new Producer(queue, 10000)),
+                new Thread(new Producer(queue, 10000)),
+        };
 
-        Thread producerThread = new Thread(producer);
-        Thread consumerThread = new Thread(consumer);
-        consumerThread.setPriority(Thread.MAX_PRIORITY);
+        Thread[] consumerList = {
+                new Thread(new Consumer(queue, totalValue)),
+                new Thread(new Consumer(queue, totalValue)),
+                new Thread(new Consumer(queue, totalValue)),
+                new Thread(new Consumer(queue, totalValue))
+        };
 
-        producerThread.start();
-        consumerThread.start();
+        for (Thread thread : producerList) {
+            thread.start();
+        }
+
+        for (Thread thread : consumerList) {
+            thread.start();
+        }
+
+        for (Thread thread : producerList) {
+            thread.join();
+        }
+
+        for (Thread thread : consumerList) {
+            thread.interrupt();
+        }
+
+        for (Thread thread : consumerList) {
+            thread.join();
+        }
+
+        System.out.println("total value: " + totalValue.getValue());
     }
 }

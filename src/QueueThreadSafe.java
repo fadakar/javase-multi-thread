@@ -1,8 +1,8 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class QueueThreadSafe<T extends Number> {
-    private final List<T> list = new ArrayList<>();
+    private final List<T> list = new LinkedList<>();
     private final int maxConcurrent;
 
     public QueueThreadSafe(int maxConcurrent) {
@@ -10,22 +10,21 @@ public class QueueThreadSafe<T extends Number> {
     }
 
     public synchronized void add(T number) throws InterruptedException {
-        if(list.size() >= maxConcurrent) {
+        while(list.size() >= maxConcurrent) {
             wait();
         }
 
         list.add(number);
-        notify();
+        notifyAll();
     }
 
     public synchronized T take() throws InterruptedException {
-        if(list.isEmpty()){
+        while(list.isEmpty()) {
             wait();
         }
 
-        T number = list.getFirst();
-        list.removeFirst();
-        notify();
+        T number = list.removeFirst();
+        notifyAll();
         return number;
     }
 

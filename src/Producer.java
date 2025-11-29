@@ -1,19 +1,19 @@
 public class Producer implements Runnable {
 
     private final QueueThreadSafe<Integer> queue;
-    private final int maxSize;
+    private final int size;
 
 
-    public Producer(QueueThreadSafe<Integer> queue, int maxSize) {
+    public Producer(QueueThreadSafe<Integer> queue, int size) {
         this.queue = queue;
-        this.maxSize = maxSize;
+        this.size = size;
     }
 
 
     @Override
     public void run() {
         int i = 0;
-        while (i++ <= maxSize) {
+        while (i++ <= size) {
             try {
                 this.queue.add(i);
                 System.out.printf("Queue Size: %d%n", this.queue.length());

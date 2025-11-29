@@ -1,11 +1,11 @@
 public class Consumer implements Runnable {
 
-    private QueueThreadSafe<Integer> queue;
+    private final QueueThreadSafe<Integer> queue;
+    private final IntegerSafe totalValue;
 
-    private int sum;
-
-    public Consumer(QueueThreadSafe<Integer> queue) {
+    public Consumer(QueueThreadSafe<Integer> queue, IntegerSafe totalValue) {
         this.queue = queue;
+        this.totalValue = totalValue;
     }
 
 
@@ -13,10 +13,12 @@ public class Consumer implements Runnable {
     public void run() {
         while (true) {
             try {
-                sum += this.queue.take();
-                System.out.printf("Sum of numbers: %d%n", sum);
+                Integer consumedValue = queue.take();
+                totalValue.inc(consumedValue);
+                System.out.printf("Sum of numbers: %d \n", totalValue.getValue());
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
