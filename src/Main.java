@@ -1,10 +1,8 @@
-import java.util.concurrent.ArrayBlockingQueue;
-
 public class Main {
     public static void main(String[] args) {
-        Queue<Integer> queue = new Queue<>();
+        QueueThreadSafe<Integer> queue = new QueueThreadSafe<>(5);
 
-        Producer producer = new Producer(queue, 10000, 5);
+        Producer producer = new Producer(queue, 10000);
         Consumer consumer = new Consumer(queue);
 
         Thread producerThread = new Thread(producer);
